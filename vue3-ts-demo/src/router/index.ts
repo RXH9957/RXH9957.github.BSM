@@ -1,0 +1,75 @@
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
+import HomeView from '../views/HomeView.vue'
+
+const routes: Array<RouteRecordRaw> = [
+  {
+    path: '/',
+    name: 'home',
+    component: HomeView,
+    redirect:"goods",
+    children:[
+      {
+        path:"goods",
+        name:"goods",
+        meta:{
+          isShow:true,
+          title:"商品列表"
+        },
+        component: () => import(/* webpackChunkName: "about" */ '../views/GoodsView.vue')
+      },
+      {
+        path:"user",
+        name:"user",
+        meta:{
+          isShow:true,
+          title:"用户列表"
+        },
+        component: () => import(/* webpackChunkName: "about" */ '../views/UserView.vue')
+      },
+      {
+        path:"role",
+        name:"role",
+        meta:{
+          isShow:true,
+          title:"角色列表"
+        },
+        component: () => import(/* webpackChunkName: "about" */ '../views/RoleView.vue')
+      },
+      {
+        path:"authority",
+        name:"authority",
+        meta:{
+          isShow:false,
+          title:"权限列表"
+        },
+        component: () => import(/* webpackChunkName: "about" */ '../views/AuthorityView.vue')
+      }
+    ]
+  },
+  {
+    path: '/about',
+    name: 'about',
+    component: () => import( '../views/AboutView.vue')
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: () => import( '../views/LoginView.vue')
+  }
+]
+
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
+
+//路由守卫
+router.beforeEach((to,from,next)=>{
+  const token:string | null =localStorage.getItem('token');
+  if(!token && to.path!=='/login'){
+    next('/login')
+  }else{
+    next()
+  }
+})
+export default router
